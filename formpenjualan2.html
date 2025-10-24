@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Pesanan Kedai CBK</title>
+    <style>
+        /* Reset */
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffb74d 100%);
+            padding: 2rem;
+            max-width: 900px;
+            margin: 2rem auto;
+            color: #4e342e;
+            border-radius: 12px;
+            box-shadow: 0 0 45px rgba(255, 152, 0, 0.3);
+        }
+        h2 {
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid #ef6c00;
+            padding-bottom: 0.3rem;
+            font-weight: 700;
+            color: #e65100;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+        }
+
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 12px; /* space between rows */
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #fff3e0;
+            box-shadow: 0 8px 24px rgba(255, 152, 0, 0.2);
+        }
+        thead tr {
+            background-color: #ff9800;
+            color: white;
+            font-weight: 700;
+            text-align: left;
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        thead th {
+            padding: 14px 18px;
+        }
+        tbody tr {
+            background-color: white;
+            box-shadow: 0 3px 12px rgba(255, 152, 0, 0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border-radius: 10px;
+        }
+        tbody tr:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 152, 0, 0.3);
+        }
+        tbody td {
+            padding: 14px 18px;
+            vertical-align: middle;
+            color: #6d4c41;
+            font-size: 0.95rem;
+        }
+
+        /* Status badges */
+        .eksekutif {
+            background-color: #ffe0b2;
+            color: #bf360c;
+            font-weight: 700;
+            text-align: center;
+            border-radius: 14px;
+            padding: 6px 14px;
+            display: inline-block;
+            min-width: 90px;
+            box-shadow: inset 0 0 8px #e65100;
+            user-select: none;
+            font-size: 0.9rem;
+        }
+        .biasa {
+            background-color: #ffd180;
+            color: #e65100;
+            font-weight: 700;
+            text-align: center;
+            border-radius: 14px;
+            padding: 6px 14px;
+            display: inline-block;
+            min-width: 90px;
+            box-shadow: inset 0 0 8px #bf360c;
+            user-select: none;
+            font-size: 0.9rem;
+        }
+
+        /* Buttons */
+        button {
+            background: #ef6c00;
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            margin: 5px 10px 15px 0;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(239, 108, 0, 0.6);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.25s ease;
+            user-select: none;
+        }
+        button:hover {
+            background-color: #bf360c;
+            box-shadow: 0 9px 24px rgba(191, 54, 12, 0.9);
+            transform: translateY(-3px);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 6px 16px rgba(191, 54, 12, 0.7);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem;
+                margin: 1rem;
+            }
+            table, thead tr, tbody tr, th, td {
+                font-size: 0.85rem;
+            }
+            button {
+                width: 100%;
+                margin: 8px 0 15px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Data Pesanan Coffee Shop</h2>
+
+    <button onclick="tambahData()">Tambah Data</button>
+    <button onclick="hapusSemua()">Hapus Semua</button>
+
+    <table id="tabelPesanan">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama Pemesan</th>
+                <th>Tanggal Pesan</th>
+                <th>Menu</th>
+                <th>Proses Pengiriman</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        function tampilkanData() {
+            const tbody = document.querySelector("#tabelPesanan tbody");
+            tbody.innerHTML = "";
+
+            const pesanan = JSON.parse(localStorage.getItem("pesanan")) || [];
+
+            pesanan.forEach((item, index) => {
+                const tr = document.createElement("tr");
+
+                const kelasStatus = item.pengiriman === "Eksekutif" ? "eksekutif" :
+                                    item.pengiriman === "Biasa" ? "biasa" : "";
+
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${item.nama}</td>
+                    <td>${item.tgl}</td>
+                    <td>${item.menu}</td>
+                    <td class="${kelasStatus}">${item.pengiriman || "-"}</td>
+                    <td><button onclick="hapusData(${index})">Hapus</button></td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        function hapusData(index) {
+            const pesanan = JSON.parse(localStorage.getItem("pesanan")) || [];
+            pesanan.splice(index, 1);
+            localStorage.setItem("pesanan", JSON.stringify(pesanan));
+            tampilkanData();
+        }
+
+        function tambahData() {
+            window.location.href = "formpenjualan.html";
+        }
+
+        function hapusSemua() {
+            if (confirm("Yakin ingin menghapus semua data pesanan?")) {
+                localStorage.removeItem("pesanan");
+                tampilkanData();
+            }
+        }
+
+        tampilkanData();
+    </script>
+</body>
+</html>
